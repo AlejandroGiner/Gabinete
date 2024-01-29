@@ -1,9 +1,14 @@
 <?php
 
-// Variables de la conexion a la DB
-$mysqli = new mysqli("mysql_iaw", "root", "root", "gabinetedb");
-// echo "intentando conectar....";
-// Comprobamos la conexion
+$config = parse_ini_file($_SERVER['DOCUMENT_ROOT']."/../config.ini");
+
+$username = $config["username"];
+$passwd = $config["passwd"];
+$db = $config["db"];
+$hostname = $config["hostname"];
+
+$mysqli = new mysqli($hostname, $username, $passwd, $db);
+
 if ($mysqli->connect_errno) {
     die("Fallo la conexion");
 } else {
