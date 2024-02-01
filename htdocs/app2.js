@@ -55,7 +55,7 @@ function generateUserRow(user) {
 
     modifyButton = generateButton(['btn', 'btn-secondary'], '#modificarUsuarioModal', 'Modificar')
     deleteButton = generateButton(['btn', 'btn-danger'], '#eliminarUsuarioModal', 'Eliminar')
-    showAppointmentsButton = generateButton(['btn', 'btn-primary'], '#verCitasModal', 'Ver Citas')
+    showAppointmentsButton = generateButton(['btn', 'btn-primary', 'ver-citas'], '#verCitasModal', 'Ver Citas')
 
     userRow.appendChild(generateButtonCell(modifyButton))
     userRow.appendChild(generateButtonCell(deleteButton))
@@ -72,7 +72,7 @@ async function getUsers() {
         const response = await fetch(URL_GET_USER);
         users = await response.json()
 
-        const tbody = document.querySelector('tbody')
+        const tbody = document.querySelector('#main-table-body')
 
         for (user of users) {
 
