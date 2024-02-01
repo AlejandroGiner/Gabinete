@@ -12,12 +12,6 @@
     $objId = json_decode($json);
 
     $sql = "SELECT * FROM citas WHERE DNI='$objId->idUsuario'";
-    
-    // PRUEBAS
-    //$usuario = "cheko";
-    
-    //$sql = "SELECT * FROM citas ";
-
 
     $query = $mysqli->query($sql);
     
