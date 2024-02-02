@@ -11,7 +11,7 @@
     
     $objId = json_decode($json);
 
-    $sql = "SELECT * FROM citas WHERE DNI='$objId->idUsuario'";
+    $sql = "SELECT * FROM citas WHERE id_cliente='$objId->id_usuario'";
 
     $query = $mysqli->query($sql);
     

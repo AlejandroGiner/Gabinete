@@ -2,6 +2,7 @@ const URL_GET_USER = '/api/obtenerUsuario.php';
 const URL_ADD_USER = '/api/agregarUsuario.php';
 const URL_EDIT_USER = '/api/editarUsuario.php';
 const URL_DELETE_USER = '/api/borrarUsuario.php';
+const URL_GET_APPOINTMENT = '/api/obtenerCita.php';
 
 /**
  * Generates a td element with a value inside.
@@ -43,6 +44,50 @@ function generateButtonCell(button) {
 }
 
 /**
+ * Populates the appointments modal body with appointments.
+ */
+async function getAppointments(event) {
+    const tbody = document.querySelector('#verCitasModal tbody')
+    tbody.replaceChildren()
+    const id_usuario = event.target.getAttribute('data-id')
+    console.log(`Viendo citas de ${id_usuario}`)
+    try {
+        const response = await fetch(URL_GET_APPOINTMENT,
+            {
+                method: 'POST',
+                body: JSON.stringify({'id_usuario': id_usuario})
+            }
+            );
+        appointments = await response.json()
+        console.log(appointments)
+        for (appt of appointments) {
+
+            const userRow = generateAppointmentRow(appt)
+            tbody.appendChild(userRow)
+
+        }
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+}
+
+
+
+function generateAppointmentRow(appt) {
+    const apptRow = document.createElement('tr')
+    apptRow.appendChild(generateTextCell(appt.fecha_cita))
+    apptRow.appendChild(generateTextCell(appt.hora_inicio))
+    apptRow.appendChild(generateTextCell(appt.hora_fin))
+    apptRow.appendChild(generateTextCell(appt.tipo_cita))
+    apptRow.appendChild(generateTextCell(appt.facturada))
+    apptRow.appendChild(generateTextCell(appt.comentario))
+
+    return apptRow
+}
+
+/**
  * Generates a row for a table based on a specific user.
  * @param {*} user 
  * @returns 
@@ -55,7 +100,9 @@ function generateUserRow(user) {
 
     modifyButton = generateButton(['btn', 'btn-secondary'], '#modificarUsuarioModal', 'Modificar')
     deleteButton = generateButton(['btn', 'btn-danger'], '#eliminarUsuarioModal', 'Eliminar')
-    showAppointmentsButton = generateButton(['btn', 'btn-primary', 'ver-citas'], '#verCitasModal', 'Ver Citas')
+    showAppointmentsButton = generateButton(['btn', 'btn-primary', 'vercitas'], '#verCitasModal', 'Ver Citas')
+    showAppointmentsButton.setAttribute('data-id',user.id_usuario)
+    showAppointmentsButton.addEventListener('click',getAppointments)
 
     userRow.appendChild(generateButtonCell(modifyButton))
     userRow.appendChild(generateButtonCell(deleteButton))
