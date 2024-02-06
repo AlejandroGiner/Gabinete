@@ -1,24 +1,31 @@
 <?php
 
-    header('Access-Control-Allow-Origin: *');
-    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-    header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Allow: GET, POST, OPTIONS, PUT, DELETE");
 
-    require "conexion.php";
+require "conexion.php";
 
-    $json = file_get_contents("php://input");
-    
-    $objId = json_decode($json);
+$json = file_get_contents("php://input");
 
-    $sql = "SELECT * FROM citas WHERE id_cliente='$objId->id_usuario'";
+$payload = array();
+$payload = json_decode($json, true);
+if (is_null($payload)) {
+    $payload = array();
+}
 
-    $query = $mysqli->query($sql);
-    
-    $datos = array();
-    
-    while($resultado = $query->fetch_assoc()) {
-        $datos[] = $resultado;
-    }
-        
-    echo json_encode($datos);
+$sql = "SELECT * FROM citas WHERE 1";
+
+foreach ($payload as $column => $value) {
+    $sql .= " AND $column = :$column";
+}
+
+$stmt = $pdo->prepare($sql);
+foreach ($payload as $column => $value) {
+    $stmt->bindParam(":$column", $value);
+}
+
+$stmt->execute();
+$results = $stmt->fetchAll();
+echo json_encode($results);

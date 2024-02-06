@@ -7,16 +7,7 @@ header("Allow: GET, POST, OPTIONS, PUT, DELETE");
 
 require "conexion.php";
 
-// PRUEBAS
-//$usuario = "cheko";
-
-$sql = "SELECT * FROM usuarios";
-$query = $mysqli->query($sql);
-
-$datos = array();
-
-while ($resultado = $query->fetch_assoc()) {
-    $datos[] = $resultado;
-}
-
-echo json_encode($datos);
+$stmt = $pdo->prepare("SELECT * FROM usuarios");
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+echo json_encode($results);

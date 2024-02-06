@@ -9,10 +9,12 @@ require "conexion.php";
 
 $json = file_get_contents("php://input");
 
-$objId = json_decode($json);
-
-$sql = "DELETE FROM usuarios WHERE DNI='$objId->idUsuario'";
-$query = $mysqli->query($sql);
+$payload = json_decode($json);
+$stmt = $pdo->prepare("DELETE FROM usuarios WHERE DNI=?");
+$stmt->bindParam(1, $payload->id_usuario);
+$stmt->execute();
+// $results = $stmt->fetchAll();
+// echo json_encode($results);
 
 $jsonRespuesta = array('msg' => 'OK');
 echo json_encode($jsonRespuesta);

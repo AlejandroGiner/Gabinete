@@ -15,7 +15,17 @@ $objEmpleado = json_decode($json);
 
 $sql = "INSERT INTO usuarios(DNI, Nombre, Apellidos, Telefono) VALUES('$objEmpleado->dni','$objEmpleado->nombre','$objEmpleado->apellidos', '$objEmpleado->telefono')";
 
-$query = $mysqli->query($sql);
+$stmt = $pdo->prepare("INSERT INTO USUARIOS (DNI, Nombre, Apellidos, Telefono, Email, Fecha_nac, Direccion) VALUES (:dni, :nombre, :apellidos, :telefono, :email, :fecha_nac, :direccion)");
+
+$stmt->bindParam(':dni',$payload->dni);
+$stmt->bindParam(':nombre',$payload->nombre);
+$stmt->bindParam(':apellidos',$payload->apellidos);
+$stmt->bindParam(':telefono',$payload->telefono);
+$stmt->bindParam(':email',$payload->email);
+$stmt->bindParam(':fecha_nac',$payload->fecha_nac);
+$stmt->bindParam(':direccion',$payload->direccion);
+
+$stmt->execute();
 
 //$jsonRespuesta = array('msg2' => 'OK');
 $jsonRespuesta = array('msg1' => 'OK', 'msg2' => 'Chachi', 'msg3' => 'Guay');
