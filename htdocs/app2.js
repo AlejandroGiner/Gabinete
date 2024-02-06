@@ -55,9 +55,9 @@ async function getAppointments(event) {
         const response = await fetch(URL_GET_APPOINTMENT,
             {
                 method: 'POST',
-                body: JSON.stringify({'id_usuario': id_usuario})
+                body: JSON.stringify({ 'id_cliente': id_usuario })
             }
-            );
+        );
         appointments = await response.json()
         console.log(appointments)
         for (appt of appointments) {
@@ -71,6 +71,31 @@ async function getAppointments(event) {
     catch (error) {
         console.log(error)
     }
+}
+
+/**
+ * Populates the modify modal with info about a specific user.
+ */
+async function getUserInfo(event) {
+    const modifyButton = event.target
+    console.log(modifyButton)
+
+    var dni = modifyButton.getAttribute('data-dni');
+    var nombre = modifyButton.getAttribute('data-nombre');
+    var apellidos = modifyButton.getAttribute('data-apellidos');
+    var telefono = modifyButton.getAttribute('data-telefono');
+    var email = modifyButton.getAttribute('data-email');
+    var fechaNac = modifyButton.getAttribute('data-fecha-nac');
+    var direccion = modifyButton.getAttribute('data-direccion');
+
+    // Set values in the form fields
+    document.getElementById('dni').value = dni;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('apellidos').value = apellidos;
+    document.getElementById('telefono').value = telefono;
+    document.getElementById('email').value = email;
+    document.getElementById('fecha-nac').value = fechaNac;
+    document.getElementById('direccion').value = direccion;
 }
 
 
@@ -98,11 +123,24 @@ function generateUserRow(user) {
     userRow.appendChild(generateTextCell(user.Apellidos))
     userRow.appendChild(generateTextCell(user.Telefono))
 
-    modifyButton = generateButton(['btn', 'btn-secondary'], '#modificarUsuarioModal', 'Modificar')
-    deleteButton = generateButton(['btn', 'btn-danger'], '#eliminarUsuarioModal', 'Eliminar')
-    showAppointmentsButton = generateButton(['btn', 'btn-primary', 'vercitas'], '#verCitasModal', 'Ver Citas')
-    showAppointmentsButton.setAttribute('data-id',user.id_usuario)
-    showAppointmentsButton.addEventListener('click',getAppointments)
+    // Button to modify a user
+    modifyButton = generateButton(['btn', 'btn-secondary', 'bi', 'bi-pencil-square'], '#modificarUsuarioModal', ' Modificar')
+    modifyButton.setAttribute('data-dni', user.DNI)
+    modifyButton.setAttribute('data-nombre', user.Nombre)
+    modifyButton.setAttribute('data-apellidos', user.Apellidos)
+    modifyButton.setAttribute('data-telefono', user.Telefono)
+    modifyButton.setAttribute('data-email', user.Email)
+    modifyButton.setAttribute('data-fecha-nac', user.Fecha_nac)
+    modifyButton.setAttribute('data-direccion', user.Direccion)
+    modifyButton.addEventListener('click', getUserInfo)
+
+
+    deleteButton = generateButton(['btn', 'btn-danger', 'bi', 'bi-person-dash'], '#eliminarUsuarioModal', ' Eliminar')
+
+    showAppointmentsButton = generateButton(['btn', 'btn-primary', 'vercitas', 'bi', 'bi-calendar4-event'], '#verCitasModal', ' Ver Citas')
+    showAppointmentsButton.setAttribute('data-id', user.id_usuario)
+    showAppointmentsButton.addEventListener('click', getAppointments)
+
 
     userRow.appendChild(generateButtonCell(modifyButton))
     userRow.appendChild(generateButtonCell(deleteButton))
