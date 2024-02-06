@@ -10,6 +10,23 @@
         crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Gabinete Médico - Agenda</title>
+    <!-- <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid black;
+            padding: 3px;
+            text-align: center;
+        }
+
+        th {
+            font-weight: bold;
+            background-color: #E6E6E6;
+        }
+    </style> -->
 </head>
 
 <body>
@@ -17,22 +34,20 @@
         <br><br>
         <div id="calendar-container" class="panel panel-primary">
             <div class="panel-heading text-center">
-                <h2>Listado Pacientes</h2>
-            </div>
-            <table class="table table-striped">
-                <thead>
+                <h2>Agenda</h2>
+                <table class="table table-bordered">
                     <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Apellidos</th>
-                        <th scope="col">Telefono</th>
-                        <th scope="col">Modificar</th>
-                        <th scope="col">Eliminar</th>
-                        <th scope="col">Ver citas</th>
+                        <th>MO</th>
+                        <th>TU</th>
+                        <th>WE</th>
+                        <th>TH</th>
+                        <th>FR</th>
+                        <th>SA</th>
+                        <th>SU</th>
                     </tr>
-                </thead>
-                <tbody id="main-table-body"></tbody>
-            </table>
-
+                    <tr>
+                </table>
+            </div>
         </div>
         <div class="text-center">&copy; Centro Don Bosco</div>
     </div>

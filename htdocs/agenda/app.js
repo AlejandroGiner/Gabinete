@@ -1,60 +1,85 @@
 function createCalendar(elem, year, month, day) {
+    let d = new Date(year, month);
 
-    let mon = month - 1; // los meses en JS son 0..11, no 1..12
-    let d = new Date(year, mon);
+    // Create container div
+    let container = document.createElement('div');
 
-    cadena = '<br><br>' + year + '-' + month + '-' + day + '<br><br>';
+    // Display date
+    let dateHeader = document.createElement('div');
+    dateHeader.textContent = year + '-' + month + '-' + day;
+    container.appendChild(dateHeader);
 
-    let table = cadena + '<table><tr><th>MO</th><th>TU</th><th>WE</th><th>TH</th><th>FR</th><th>SA</th><th>SU</th></tr><tr>';
+    // Create table element
+    let table = document.createElement('table');
 
-    // espacios en la primera línea
-    // desde lunes hasta el primer día del mes
-    // * * * 1  2  3  4
+    // Create table header row
+    let headerRow = table.createTHead().insertRow();
+    ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'].forEach(day => {
+        let th = document.createElement('th');
+        th.textContent = day;
+        headerRow.appendChild(th);
+    });
+
+    // Create table body
+    let tbody = table.createTBody();
+
+    // Create first row with empty cells up to the start of the month
+    let currentRow = tbody.insertRow();
     for (let i = 0; i < getDay(d); i++) {
-        table += '<td></td>';
+        currentRow.insertCell();
     }
 
-    // <td> con el día  (1 - 31)
-    while (d.getMonth() == mon) {
-        table += '<td>' + d.getDate() + '</td>';
+    // Populate table with days
+    while (d.getMonth() === month) {
+        let cell = currentRow.insertCell();
+        cell.textContent = d.getDate();
 
-        if (getDay(d) % 7 == 6) { // domingo, último dia de la semana --> nueva línea
-            table += '</tr><tr>';
+        if (getDay(d) % 7 === 6) { // Sunday, start new row
+            currentRow = tbody.insertRow();
         }
 
         d.setDate(d.getDate() + 1);
     }
 
-    // espacios después del último día del mes hasta completar la última línea
-    // 29 30 31 * * * *
-    if (getDay(d) != 0) {
+    // Add empty cells after the last day of the month to complete the last row
+    if (getDay(d) !== 0) {
         for (let i = getDay(d); i < 7; i++) {
-            table += '<td></td>';
+            currentRow.insertCell();
         }
     }
 
-    // cerrar la tabla
-    table += '</tr></table>';
-    //alert (table)
-    table2 = "";
+    // Add table to container div
+    container.appendChild(table);
 
-    for (let $i = 1; $i <= 31; $i++) {
+    // Modify cell content to include buttons
+    for (let i = 1; i <= 31; i++) {
+        let cells = container.getElementsByTagName('td');
+        for (let cell of cells) {
+            if (cell.textContent == i) {
+                let button = document.createElement('input');
+                button.type = 'button';
+                button.value = i;
+                button.addEventListener('click', function() {
+                    cambiarDia(this.value);
+                });
 
-        if ($i == day) {
-            table2 = table.replace("<td>" + $i + "</td>", "<td><input type=\"button\" style=\"background-color:black;color:white\" value=\"" + $i + "\" onClick=\"cambiarDia(this.value)\"></td>");
-        } else {
-            table2 = table.replace("<td>" + $i + "</td>", "<td><input type=\"button\" value=\"" + $i + "\" onClick=\"cambiarDia(this.value)\"></td>");
+                if (i === day) {
+                    button.style.backgroundColor = 'black';
+                    button.style.color = 'white';
+                }
+
+                cell.innerHTML = '';
+                cell.appendChild(button);
+            }
         }
-
-
-        table = table2;
-        //alert (cad)
     }
 
-    //table2=table.replace("<td>1</td>", "<td><input type=\"button\" value=\"1\" onClick=\"cambiarDia(this.value)\"></td>");
-    //alert (table2);
-    elem.innerHTML = table2;
+    // Set container as the content of the provided element
+    elem.innerHTML = '';
+    elem.appendChild(container);
 }
+
+
 
 function getDay(date) { // obtiene el número de día desde 0 (lunes) a 6 (domingo)
     let day = date.getDay();
@@ -101,12 +126,41 @@ function saltar(pagina) {
 
 // var $fecha = document.getElementById("fechaEnCurso").value;
 //alert ($fecha)
-var $annioActual = ""
-var $mesActual = ""
-
-$annioActual = $fecha.substring(0, 4);
-$mesActual = $fecha.substring(5, 7);
-$diaActual = $fecha.substring(8, 10);
+const date = new Date()
+var year = date.getFullYear()
+var month = date.getMonth()
+var day = date.getDate()
 
 calendarContainer = document.getElementById('calendar-container')
-createCalendar(calendarContainer, $annioActual, $mesActual, $diaActual);
+createCalendar(calendarContainer, year, month, day);
+
+
+
+// FUNCIONES ALEJANDRO
+const URL_GET_APPOINTMENT = '/api/obtenerCita.php';
+
+
+async function getAppointments(date) {
+    console.log(JSON.stringify({ 'fecha_cita': `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}` }))
+    try {
+        const response = await fetch(URL_GET_APPOINTMENT,
+            {
+                method: 'POST',
+                body: JSON.stringify({ 'fecha_cita': `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}` })
+            }
+        );
+        appointments = await response.json()
+        console.log(appointments)
+        // for (appt of appointments) {
+
+        //     const userRow = generateAppointmentRow(appt)
+        //     tbody.appendChild(userRow)
+
+        // }
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
+
+getAppointments(new Date())
