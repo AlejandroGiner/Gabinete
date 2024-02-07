@@ -59,7 +59,7 @@ function createCalendar(elem, year, month, day) {
                 let button = document.createElement('input');
                 button.type = 'button';
                 button.value = i;
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     cambiarDia(this.value);
                 });
 
@@ -141,12 +141,12 @@ const URL_GET_APPOINTMENT = '/api/obtenerCita.php';
 
 
 async function getAppointments(date) {
-    console.log(JSON.stringify({ 'fecha_cita': `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}` }))
+    console.log(JSON.stringify({ 'fecha_cita': `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }))
     try {
         const response = await fetch(URL_GET_APPOINTMENT,
             {
                 method: 'POST',
-                body: JSON.stringify({ 'fecha_cita': `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}` })
+                body: JSON.stringify({ 'fecha_cita': `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` })
             }
         );
         appointments = await response.json()
