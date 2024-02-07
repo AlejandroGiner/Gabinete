@@ -3,7 +3,7 @@
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+header("Allow: PUT");
 
 require "conexion.php";
 
@@ -12,9 +12,9 @@ $payload = json_decode($json);
 
 $sql = "UPDATE usuarios SET ";
 
-$updates = array_map(fn($column, $value) => "$column=:$column", array_keys($payload), $payload);
+$updates = array_filter($payload,fn($key) => $key !== 'id_usuario');
+$updates = array_map(fn($column) => "$column=:$column", array_keys($payload));
 
-//  TODO remove id_usuario from SET!!
 
 $sql .= implode(",", $updates);
 
@@ -25,8 +25,14 @@ $stmt = $pdo->prepare($sql);
 foreach ($payload as $column => $value) {
     $stmt->bindParam(":$column", $value);
 }
-$stmt->execute();
 
-$jsonRespuesta = array('msg' => 'OK');
-// convertimos la variable php en un json y es lo que enviamos a app.js
-echo json_encode($jsonRespuesta);
+$status = $stmt->execute();
+
+if ($status) {
+    $response = array('message' => 'Operation successful');
+} else {
+    http_response_code(500);
+    $response = array('message' => 'Internal Server Error. Please try again later.');
+}
+
+echo json_encode($response);

@@ -2,32 +2,31 @@
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Allow: GET, POST, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Methods: POST");
+header("Allow: POST");
 
-//echo "estamos en agregarUsuario...";
 require "./conexion.php";
 
 $json = file_get_contents("php://input");
+$payload = json_decode($json);
 
-$objEmpleado = json_decode($json);
-//echo $objEmpleado;
+$stmt = $pdo->prepare("INSERT INTO usuarios (DNI, Nombre, Apellidos, Telefono, Email, Fecha_nac, Direccion) VALUES (:dni, :nombre, :apellidos, :telefono, :email, :fecha_nac, :direccion)");
 
-$sql = "INSERT INTO usuarios(DNI, Nombre, Apellidos, Telefono) VALUES('$objEmpleado->dni','$objEmpleado->nombre','$objEmpleado->apellidos', '$objEmpleado->telefono')";
+$stmt->bindParam(':dni', $payload->dni);
+$stmt->bindParam(':nombre', $payload->nombre);
+$stmt->bindParam(':apellidos', $payload->apellidos);
+$stmt->bindParam(':telefono', $payload->telefono);
+$stmt->bindParam(':email', $payload->email);
+$stmt->bindParam(':fecha_nac', $payload->fecha_nac);
+$stmt->bindParam(':direccion', $payload->direccion);
 
-$stmt = $pdo->prepare("INSERT INTO USUARIOS (DNI, Nombre, Apellidos, Telefono, Email, Fecha_nac, Direccion) VALUES (:dni, :nombre, :apellidos, :telefono, :email, :fecha_nac, :direccion)");
+$status = $stmt->execute();
 
-$stmt->bindParam(':dni',$payload->dni);
-$stmt->bindParam(':nombre',$payload->nombre);
-$stmt->bindParam(':apellidos',$payload->apellidos);
-$stmt->bindParam(':telefono',$payload->telefono);
-$stmt->bindParam(':email',$payload->email);
-$stmt->bindParam(':fecha_nac',$payload->fecha_nac);
-$stmt->bindParam(':direccion',$payload->direccion);
+if ($status) {
+    $response = array('message' => 'Operation successful');
+} else {
+    http_response_code(500);
+    $response = array('message' => 'Internal Server Error. Please try again later.');
+}
 
-$stmt->execute();
-
-//$jsonRespuesta = array('msg2' => 'OK');
-$jsonRespuesta = array('msg1' => 'OK', 'msg2' => 'Chachi', 'msg3' => 'Guay');
-echo json_encode($jsonRespuesta);
-    //return $jsonRespuesta;
+echo json_encode($response);
