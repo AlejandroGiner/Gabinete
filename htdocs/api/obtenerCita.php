@@ -9,21 +9,19 @@ require "conexion.php";
 
 $json = file_get_contents("php://input");
 
-$payload = array();
 $payload = json_decode($json, true);
 if (is_null($payload)) {
     $payload = array();
 }
 
-$sql = "SELECT * FROM citas WHERE 1";
+$sql = "SELECT * FROM citas WHERE 1 AND ";
 
-foreach ($payload as $column => $value) {
-    $sql .= " AND $column = :$column";
-}
+$conditions = array_map(fn($column) => "$column = :$column", array_keys($payload));
+$sql .= implode(" AND ", $conditions);
 
 $stmt = $pdo->prepare($sql);
 foreach ($payload as $column => $value) {
-    $stmt->bindParam(":$column", $value);
+    $stmt->bindParam(":$column", $payload[$column]);
 }
 
 $stmt->execute();
