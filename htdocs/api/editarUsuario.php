@@ -8,22 +8,20 @@ header("Allow: PUT");
 require "conexion.php";
 
 $json = file_get_contents("php://input");
-$payload = json_decode($json);
+$payload = json_decode($json, true);
 
 $sql = "UPDATE usuarios SET ";
 
-$updates = array_filter($payload,fn($key) => $key !== 'id_usuario');
-$updates = array_map(fn($column) => "$column=:$column", array_keys($payload));
-
+$updates = array_filter($payload,fn($key) => $key !== 'id_usuario', ARRAY_FILTER_USE_KEY);
+$updates = array_map(fn($column) => "$column = :$column", array_keys($updates));
 
 $sql .= implode(",", $updates);
-
-$sql .= " WHERE id_usuario=:id_usuario";
+$sql .= " WHERE id_usuario = :id_usuario";
 
 $stmt = $pdo->prepare($sql);
 
 foreach ($payload as $column => $value) {
-    $stmt->bindParam(":$column", $value);
+    $stmt->bindParam(":$column", $payload[$column]);
 }
 
 $status = $stmt->execute();
