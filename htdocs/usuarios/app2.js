@@ -77,16 +77,16 @@ async function getAppointments(event) {
  * Populates the modify modal with info about a specific user.
  */
 async function getUserInfo(event) {
-    const modifyButton = event.target
-    console.log(modifyButton)
+    const row = event.target.parentElement.parentElement
+    console.log(row)
 
-    var dni = modifyButton.getAttribute('data-dni');
-    var nombre = modifyButton.getAttribute('data-nombre');
-    var apellidos = modifyButton.getAttribute('data-apellidos');
-    var telefono = modifyButton.getAttribute('data-telefono');
-    var email = modifyButton.getAttribute('data-email');
-    var fechaNac = modifyButton.getAttribute('data-fecha-nac');
-    var direccion = modifyButton.getAttribute('data-direccion');
+    var dni = row.getAttribute('data-dni');
+    var nombre = row.getAttribute('data-nombre');
+    var apellidos = row.getAttribute('data-apellidos');
+    var telefono = row.getAttribute('data-telefono');
+    var email = row.getAttribute('data-email');
+    var fechaNac = row.getAttribute('data-fecha-nac');
+    var direccion = row.getAttribute('data-direccion');
 
     // Set values in the form fields
     document.getElementById('dni').value = dni;
@@ -123,19 +123,22 @@ function generateUserRow(user) {
     userRow.appendChild(generateTextCell(user.Apellidos))
     userRow.appendChild(generateTextCell(user.Telefono))
 
+    userRow.setAttribute('data-id', user.id_usuario)
+    userRow.setAttribute('data-dni', user.DNI)
+    userRow.setAttribute('data-nombre', user.Nombre)
+    userRow.setAttribute('data-apellidos', user.Apellidos)
+    userRow.setAttribute('data-telefono', user.Telefono)
+    userRow.setAttribute('data-email', user.Email)
+    userRow.setAttribute('data-fecha-nac', user.Fecha_nac)
+    userRow.setAttribute('data-direccion', user.Direccion)
+
     // Button to modify a user
     modifyButton = generateButton(['btn', 'btn-secondary', 'bi', 'bi-pencil-square'], '#modificarUsuarioModal', ' Modificar')
-    modifyButton.setAttribute('data-dni', user.DNI)
-    modifyButton.setAttribute('data-nombre', user.Nombre)
-    modifyButton.setAttribute('data-apellidos', user.Apellidos)
-    modifyButton.setAttribute('data-telefono', user.Telefono)
-    modifyButton.setAttribute('data-email', user.Email)
-    modifyButton.setAttribute('data-fecha-nac', user.Fecha_nac)
-    modifyButton.setAttribute('data-direccion', user.Direccion)
     modifyButton.addEventListener('click', getUserInfo)
 
 
     deleteButton = generateButton(['btn', 'btn-danger', 'bi', 'bi-person-dash'], '#eliminarUsuarioModal', ' Eliminar')
+    deleteButton.addEventListener('click',setDeleteID)
 
     showAppointmentsButton = generateButton(['btn', 'btn-primary', 'vercitas', 'bi', 'bi-calendar4-event'], '#verCitasModal', ' Ver Citas')
     showAppointmentsButton.setAttribute('data-id', user.id_usuario)
@@ -173,3 +176,37 @@ async function getUsers() {
 }
 
 getUsers()
+
+document.getElementById('delete-button').addEventListener('click',deleteUser)
+
+// DELETE USER
+
+/**
+ * Deletes a user with a given user ID.
+ */
+async function deleteUser(event) {
+    event.preventDefault()
+    const id_usuario = document.getElementById('eliminar_id').value
+    console.log(`ELIMINANDO ${id_usuario}`)
+    try {
+        const response = await fetch(URL_DELETE_USER,
+            {
+                method: 'DELETE',
+                body: JSON.stringify({ 'id_usuario': id_usuario })
+            }
+        );
+        const responseJSON = await response.json()
+        console.log(responseJSON)
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+    location.reload()
+}
+
+async function setDeleteID(event) {
+    const row = event.target.parentElement.parentElement
+    const id_usuario = row.getAttribute('data-id')
+    document.getElementById('eliminar_id').value = id_usuario
+}
