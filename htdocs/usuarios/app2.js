@@ -3,6 +3,7 @@ const URL_ADD_USER = '/api/agregarUsuario.php';
 const URL_EDIT_USER = '/api/editarUsuario.php';
 const URL_DELETE_USER = '/api/borrarUsuario.php';
 const URL_GET_APPOINTMENT = '/api/obtenerCita.php';
+const URL_GET_EXPEDIENTE = '/api/obtenerExpediente.php';
 
 /**
  * Generates a td element with a value inside.
@@ -87,6 +88,7 @@ async function getUserInfo(event) {
     var email = row.getAttribute('data-email');
     var fechaNac = row.getAttribute('data-fecha-nac');
     var direccion = row.getAttribute('data-direccion');
+    var id_usuario = row.getAttribute('data-id')
 
     // Set values in the form fields
     document.getElementById('dni').value = dni;
@@ -96,6 +98,7 @@ async function getUserInfo(event) {
     document.getElementById('email').value = email;
     document.getElementById('fecha-nac').value = fechaNac;
     document.getElementById('direccion').value = direccion;
+    document.getElementById('id_usuario_modificar').value = id_usuario;
 }
 
 
@@ -132,24 +135,87 @@ function generateUserRow(user) {
     userRow.setAttribute('data-fecha-nac', user.Fecha_nac)
     userRow.setAttribute('data-direccion', user.Direccion)
 
-    // Button to modify a user
+    // Modify user button
     modifyButton = generateButton(['btn', 'btn-secondary', 'bi', 'bi-pencil-square'], '#modificarUsuarioModal', ' Modificar')
     modifyButton.addEventListener('click', getUserInfo)
 
-
+    // Delete user button
     deleteButton = generateButton(['btn', 'btn-danger', 'bi', 'bi-person-dash'], '#eliminarUsuarioModal', ' Eliminar')
     deleteButton.addEventListener('click',setDeleteID)
 
+    // Show appointments button
     showAppointmentsButton = generateButton(['btn', 'btn-primary', 'vercitas', 'bi', 'bi-calendar4-event'], '#verCitasModal', ' Ver Citas')
     showAppointmentsButton.setAttribute('data-id', user.id_usuario)
     showAppointmentsButton.addEventListener('click', getAppointments)
+
+    // Expediente
+    expedienteButton = generateButton(['btn', 'btn-secondary', 'expediente', 'bi', 'bi-file-earmark-person-fill'], '#verExpedienteModal', 'Ver expediente')
+    expedienteButton.setAttribute('data-id', user.id_usuario)
+    expedienteButton.addEventListener('click', getExpediente)
 
 
     userRow.appendChild(generateButtonCell(modifyButton))
     userRow.appendChild(generateButtonCell(deleteButton))
     userRow.appendChild(generateButtonCell(showAppointmentsButton))
+    userRow.appendChild(generateButtonCell(expedienteButton))
 
     return userRow
+}
+
+
+async function getExpediente(event) {
+
+    const tbody = document.querySelector('#verExpedienteModal tbody')
+    tbody.replaceChildren()
+
+    // look at user ID of button pressed
+    const id_usuario = event.target.getAttribute('data-id')
+
+    // get expediente for that user
+
+    try {
+        const response = await fetch(URL_GET_EXPEDIENTE,
+            {
+                method: 'POST',
+                body: JSON.stringify({'id_usuario': id_usuario})
+            }
+        );
+
+        const expediente = await response.json()
+        const expedienteDiv = document.createElement('p')
+        expedienteDiv.innerText = expediente.comentario
+
+        tbody.appendChild(expedienteDiv)
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+
+
+    // get comments for that user's appointments
+
+    try {
+        const response = await fetch(URL_GET_APPOINTMENT,
+            {
+                method: 'POST',
+                body: JSON.stringify({ 'id_cliente': id_usuario })
+            }
+        );
+        appointments = await response.json()
+        console.log(appointments)
+        for (appt of appointments) {
+
+            const apptRow = document.createElement('tr')
+            apptRow.appendChild(generateTextCell(appt.comentario))
+            tbody.appendChild(apptRow)
+
+        }
+    }
+
+    catch (error) {
+        console.log(error)
+    }
 }
 
 /**
@@ -209,4 +275,89 @@ async function setDeleteID(event) {
     const row = event.target.parentElement.parentElement
     const id_usuario = row.getAttribute('data-id')
     document.getElementById('eliminar_id').value = id_usuario
+}
+
+
+
+botonModificarUsuario = document.getElementById('botonModificarUsuario')
+
+botonModificarUsuario.addEventListener('click',modificarUsuario)
+
+async function modificarUsuario(event){
+    event.preventDefault()
+
+    id_usuario = document.getElementById('id_usuario_modificar').value
+    dni = document.getElementById('dni').value
+    nombre = document.getElementById('nombre').value
+    apellidos = document.getElementById('apellidos').value
+    telefono = document.getElementById('telefono').value
+    email = document.getElementById('email').value
+    fecha_nac = document.getElementById('fecha-nac').value
+    direccion = document.getElementById('direccion').value
+
+    console.log(`Modificando ${id_usuario} - ${nombre}`)
+
+    try {
+        const response = await fetch(URL_EDIT_USER,
+            {
+                method: 'PUT',
+                body: JSON.stringify({
+                    'id_usuario': id_usuario,
+                    'DNI': dni,
+                    'Nombre': nombre,
+                    'Apellidos': apellidos,
+                    'Telefono': telefono,
+                    'Email': email,
+                    'Fecha_nac': fecha_nac,
+                    'Direccion': direccion
+                })
+            }
+        );
+    }
+    catch (error) {
+        console.log(error)
+    }
+    location.reload()
+}
+
+
+// Crear usuario
+
+botonCrearUsuario = document.getElementById('botonCrearUsuario')
+
+botonCrearUsuario.addEventListener('click',crearUsuario)
+
+async function crearUsuario(event){
+    event.preventDefault()
+
+    dni = document.getElementById('dni-crear').value
+    nombre = document.getElementById('nombre-crear').value
+    apellidos = document.getElementById('apellidos-crear').value
+    telefono = document.getElementById('telefono-crear').value
+    email = document.getElementById('email-crear').value
+    fecha_nac = document.getElementById('fecha-nac-crear').value
+    direccion = document.getElementById('direccion-crear').value
+
+    console.log(`Creando ${nombre}`)
+
+    try {
+        const response = await fetch(URL_ADD_USER,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    'dni': dni,
+                    'nombre': nombre,
+                    'apellidos': apellidos,
+                    'telefono': telefono,
+                    'email': email,
+                    'fecha_nac': fecha_nac,
+                    'direccion': direccion
+                })
+            }
+        );
+    }
+    catch (error) {
+        console.log(error)
+    }
+    location.reload()
 }

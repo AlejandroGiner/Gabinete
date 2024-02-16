@@ -32,7 +32,7 @@
         </thead>
         <tbody id="main-table-body"></tbody>
       </table>
-
+      <button class="btn btn-primary bi bi-person-plus-fill" data-bs-target="#crearUsuarioModal" data-bs-toggle="modal"> Añadir usuario</button>
     </div>
     <div class="text-center">&copy; Centro Don Bosco</div>
   </div>
@@ -49,6 +49,7 @@
         </div>
         <form>
           <div class="modal-body">
+            <input type="hidden" name="id_usuario" id="id_usuario_modificar">
             <div class="row form-floating mb-3">
               <input class="form-control" type="text" name="dni" id="dni" placeholder="">
               <label for="dni" class="col-sm-2 form-label">DNI</label>
@@ -80,7 +81,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <button id="botonModificarUsuario" type="submit" class="btn btn-primary">Guardar cambios</button>
           </div>
         </form>
       </div>
@@ -113,6 +114,29 @@
 
   <!-- MODAL verCitas -->
   <div class="modal fade" id="verCitasModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">Header</div>
+        <div class="modal-body">
+          <table class="table table-striped">
+            <thead>
+              <th>Fecha</th>
+              <th>Hora inicio</th>
+              <th>Hora fin</th>
+              <th>Tipo</th>
+              <th>Facturada</th>
+              <th>Comentario</th>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">Footer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL verExpediente -->
+  <div class="modal fade" id="verExpedienteModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">Header</div>
@@ -122,6 +146,57 @@
           </table>
         </div>
         <div class="modal-footer">Footer</div>
+      </div>
+    </div>
+  </div>
+
+
+
+    <!-- MODAL crearUsuario -->
+    <div class="modal modal-lg fade" id="crearUsuarioModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Nuevo usuario</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form>
+          <div class="modal-body">
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="dni" id="dni-crear" placeholder="">
+              <label for="dni" class="col-sm-2 form-label">DNI</label>
+            </div>
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="nombre" id="nombre-crear" placeholder="">
+              <label for="nombre" class="col-sm-2 form-label">Nombre</label>
+            </div>
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="apellidos" id="apellidos-crear" placeholder="">
+              <label for="apellidos" class="col-sm-2 form-label">Apellidos</label>
+            </div>
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="telefono" id="telefono-crear" placeholder="">
+              <label for="telefono" class="col-sm-2 form-label">Teléfono</label>
+            </div>
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="email" id="email-crear" placeholder="">
+              <label for="email" class="col-sm-2 form-label">Email</label>
+            </div>
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="fecha-nac" id="fecha-nac-crear" placeholder="">
+              <label for="fecha-nac" class="col-sm-2 form-label">Fecha de nacimiento</label>
+            </div>
+            <div class="row form-floating mb-3">
+              <input class="form-control" type="text" name="direccion" id="direccion-crear" placeholder="">
+              <label for="direccion" class="col-sm-2 form-label">Dirección</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button id="botonCrearUsuario" type="submit" class="btn btn-primary">Crear usuario</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -1,1 +1,0 @@
-// TODO add event to submit button of modify user modal that calls the API to modify a user
