@@ -15,7 +15,7 @@
 // Se crea la hora, a partir de las horas y minutos establecidos en el formulario de nueva cita.
   $horaDeCita=$_POST["hora"].":".$_POST["minutos"];
 // Se monta la consulta para grabar una nueva cita.
-  $consulta="INSERT INTO citas (diaCita, horaCita, asuntoCita) VALUES ('$fechaEnCurso','$horaDeCita','".$_POST["asunto"]."');";
+  $consulta="INSERT INTO citas (fecha_cita, hora_inicio, asunto) VALUES ('$fechaEnCurso','$horaDeCita','".$_POST["asunto"]."');";
 // Se ejecuta la consulta.
   $stmt = $conexion->prepare($consulta);
   $stmt->execute();

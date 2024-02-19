@@ -11,6 +11,7 @@
         document.formularioNuevaCita.submit();
       }
     </script>
+    
   </head>
 
   <body>
@@ -18,7 +19,7 @@
 // Se incluye el miniscript de tratamiento de fechas
       include ("inc/fechas.php");
 // Se muestra la fecha en curso.
-      echo ("CITA PARA EL DÍA: ".$diaActual." del ".$mesActual." de ".$annioActual.salto);
+      echo ("CITA PARA EL Dï¿½A: ".$diaActual." del ".$mesActual." de ".$annioActual.salto);
 	?>
     <form action="" method="post" name="formularioNuevaCita" id="formularioNuevaCita">
 	  <input type="hidden" name="fechaEnCurso" id="fechaEnCurso" value="<?php echo($fechaEnCurso); ?>">
@@ -55,6 +56,9 @@
               echo ("</OPTION>".salto);
             }
           ?>
+          </select></td>
+          <td><select name="usuario" id="usuario">
+
           </select></td>
         </tr>
       </table>
