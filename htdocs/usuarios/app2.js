@@ -203,13 +203,19 @@ async function getExpediente(event) {
             }
         );
         appointments = await response.json()
-        console.log(appointments)
+        console.log(appointments.length)
         for (appt of appointments) {
-
+            
             const apptRow = document.createElement('tr')
             apptRow.appendChild(generateTextCell(appt.comentario))
+            apptRow.appendChild(generateTextCell(appt.fecha_cita))
             tbody.appendChild(apptRow)
-
+            
+        }
+        if (appointments.length==0) {
+            const row = document.createElement('tr')
+            row.appendChild(generateTextCell('No hay citas registradas'))
+            tbody.appendChild(row)
         }
     }
 
