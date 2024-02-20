@@ -14,7 +14,7 @@ if (is_null($payload)) {
     $payload = array();
 }
 
-$sql = "SELECT * FROM citas WHERE 1 AND ";
+$sql = "SELECT * FROM citas c JOIN tipo_cita t ON (c.tipo_cita=t.tipo) WHERE 1 AND ";
 
 $conditions = array_map(fn($column) => "$column = :$column", array_keys($payload));
 $sql .= implode(" AND ", $conditions);

@@ -201,6 +201,41 @@
     </div>
   </div>
 
+    <!-- MODAL facturar -->
+    <div class="modal fade" id="facturarModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"></div>
+          <div class="modal-body">
+            <table class="table table-striped">
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button id="facturar" type="button" class="btn btn-primary bi bi-credit-card"> Facturar</button>
+            <button id="verPrecios" type="button" class="btn btn-primary bi bi-cash" data-bs-target="#preciosModal" data-bs-toggle="modal"> Ver precios</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL precios -->
+    <div class="modal fade" id="preciosModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">Precios de citas</div>
+          <div class="modal-body">
+            <table class="table table-striped">
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" data-bs-target="#facturarModal" data-bs-toggle="modal">Volver a facturar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   <script src="app2.js"></script>
   <!-- <script src="/citas.js"></script> -->
 

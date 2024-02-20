@@ -4,6 +4,8 @@ const URL_EDIT_USER = '/api/editarUsuario.php';
 const URL_DELETE_USER = '/api/borrarUsuario.php';
 const URL_GET_APPOINTMENT = '/api/obtenerCita.php';
 const URL_GET_EXPEDIENTE = '/api/obtenerExpediente.php';
+const URL_GET_PRICES = '/api/obtenerPrecios.php';
+const URL_GENERAR_FACTURA = '/api/generarFactura.php';
 
 /**
  * Generates a td element with a value inside.
@@ -149,19 +151,172 @@ function generateUserRow(user) {
     showAppointmentsButton.addEventListener('click', getAppointments)
 
     // Expediente
-    expedienteButton = generateButton(['btn', 'btn-secondary', 'expediente', 'bi', 'bi-file-earmark-person-fill'], '#verExpedienteModal', 'Ver expediente')
+    expedienteButton = generateButton(['btn', 'btn-secondary', 'expediente', 'bi', 'bi-file-earmark-person-fill'], '#verExpedienteModal', ' Ver expediente')
     expedienteButton.setAttribute('data-id', user.id_usuario)
     expedienteButton.addEventListener('click', getExpediente)
 
+    // Boton de FACTURAR
+    facturarButton = generateButton(['btn', 'btn-primary', 'facturar', 'bi', 'bi-credit-card'], '#facturarModal', ' Facturar')
+    facturarButton.addEventListener('click', getFacturasEventHandler)
 
     userRow.appendChild(generateButtonCell(modifyButton))
     userRow.appendChild(generateButtonCell(deleteButton))
     userRow.appendChild(generateButtonCell(showAppointmentsButton))
     userRow.appendChild(generateButtonCell(expedienteButton))
+    userRow.appendChild(generateButtonCell(facturarButton))
 
     return userRow
 }
 
+botonVerPrecios = document.getElementById('facturar')
+botonVerPrecios.addEventListener('click',facturar)
+
+async function facturar(event) {
+    // Primero vemos qué citas se quieren facturar
+    const modal = document.getElementById('facturarModal')
+    const id_cliente = modal.getAttribute('data-id')
+
+    const citas = modal.querySelectorAll('input[type=checkbox]:checked')
+
+    // Luego, por cada cita que se quiera facturar, hacemos un fetch a la API con el id de usuario y el id de cita
+
+    for (cita of citas) {
+        id_cita = cita.getAttribute('value')
+
+        try {
+            const response = await fetch(URL_GENERAR_FACTURA,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'id_cliente': id_cliente,
+                        'id_cita': id_cita
+                    })
+                }
+            );
+        }
+
+        catch (error) {
+            console.log(error)
+        }
+    }
+
+    // Por último recargamos la vista modal
+    getFacturas(id_cliente)
+}
+
+async function getFacturasEventHandler(event) {
+    const modal = document.getElementById('facturarModal')
+    const row = event.target.parentElement.parentElement
+
+    const header = modal.querySelector('.modal-header')
+    header.innerText = `Citas por facturar del cliente ${row.getAttribute('data-nombre')} ${row.getAttribute('data-apellidos')}`
+
+    const id_usuario = row.getAttribute('data-id')
+    getFacturas(id_usuario)
+}
+
+async function getFacturas(id_usuario) {
+    const modal = document.getElementById('facturarModal')
+    
+    modal.setAttribute('data-id', id_usuario)
+    
+    const body = modal.querySelector('.modal-body')
+    const tbody = body.querySelector('tbody')
+    tbody.replaceChildren()
+    
+    try {
+        const response = await fetch(URL_GET_APPOINTMENT,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    'id_cliente': id_usuario,
+                    'facturada': 0
+                })
+            }
+        );
+
+        
+        const appointments = await response.json()
+        let previous_appointments = []
+        
+        for (appt of appointments) {
+            if (new Date(appt.fecha_cita) <= new Date()) {
+                previous_appointments.push(appt)
+                const apptRow = document.createElement('tr')
+                apptRow.appendChild(generateTextCell(appt.fecha_cita))
+                apptRow.appendChild(generateTextCell(appt.hora_inicio))
+                apptRow.appendChild(generateTextCell(appt.tipo_cita))
+                apptRow.appendChild(generateTextCell(appt.asunto))
+                apptRow.appendChild(generateTextCell(appt.importe))
+                apptRow.appendChild(generateTextCell(appt.hora_inicio))
+
+                let checkbox = document.createElement('input')
+                checkbox.setAttribute('type','checkbox')
+                checkbox.setAttribute('value',appt.id_cita)
+                checkbox.classList.add(['form-check-input'])
+                let td = document.createElement('td')
+                td.appendChild(checkbox)
+                apptRow.appendChild(td)
+
+                tbody.appendChild(apptRow)
+            }
+            
+        }
+        if (previous_appointments.length==0) {
+            const row = document.createElement('tr')
+            row.appendChild(generateTextCell('Este cliente no citas sin facturar'))
+            tbody.appendChild(row)
+            document.getElementById('facturar').style.display='none'
+        }
+        else {
+            document.getElementById('facturar').style.display=''
+        }
+
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+
+
+    const footer = modal.querySelector('.modal-footer')
+
+}
+
+
+botonVerPrecios = document.getElementById('verPrecios')
+botonVerPrecios.addEventListener('click',getPrecios)
+
+async function getPrecios(event) {
+    const tbody = document.querySelector('#preciosModal tbody')
+    tbody.replaceChildren()
+    try {
+        const response = await fetch(URL_GET_PRICES,
+            {
+                method: 'GET'
+            }
+        );
+        const prices = await response.json()
+        console.log(prices.length)
+        for (price of prices) {
+            
+            const priceRow = document.createElement('tr')
+            priceRow.appendChild(generateTextCell(price.tipo))
+            priceRow.appendChild(generateTextCell(price.importe))
+            tbody.appendChild(priceRow)
+            
+        }
+        if (prices.length==0) {
+            const row = document.createElement('tr')
+            row.appendChild(generateTextCell('No hay precios disponibles en este momento'))
+            tbody.appendChild(row)
+        }
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+}
 
 async function getExpediente(event) {
 
